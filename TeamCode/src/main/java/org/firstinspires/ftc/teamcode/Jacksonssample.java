@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 
@@ -57,6 +58,7 @@ public class Jacksonssample extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
+    private DcMotorEx Arm;
 
     @Override
     public void runOpMode() {
@@ -68,30 +70,42 @@ public class Jacksonssample extends LinearOpMode {
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+        Arm = (DcMotorEx) hardwareMap.get("Arm");
 
+        Arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
         // See the note about this earlier on this page.
-        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
-
+        Arm.setTargetPosition(50);
+        Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Arm.setPower(0.5);
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
 
+            if (gamepad1.a){
+                Arm.setTargetPosition(300);
+                Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Arm.setPower(0.5);
+            }
+            if (gamepad1.b){
+                Arm.setTargetPosition(50);
+                Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Arm.setPower(0.2);
+            }
 
 
-
-
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
+            double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = -gamepad1.right_stick_x;
 
 
             // Denominator is the largest motor power (absolute value) or 1
@@ -112,9 +126,9 @@ public class Jacksonssample extends LinearOpMode {
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
 
+            int currentPosition=Arm.getCurrentPosition();
             // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            telemetry.addData("armPosition", currentPosition);
             telemetry.update();
         }
     }
