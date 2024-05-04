@@ -59,7 +59,7 @@ public class Jacksonssample extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotorEx Arm;
-
+    int armPosition=50;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -90,8 +90,8 @@ public class Jacksonssample extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-
-            if (gamepad1.a){
+//asdad
+          /*  if (gamepad1.a){
                 Arm.setTargetPosition(300);
                 Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Arm.setPower(0.5);
@@ -101,8 +101,19 @@ public class Jacksonssample extends LinearOpMode {
                 Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 Arm.setPower(0.2);
             }
-
-
+*/           if (gamepad1.a){
+            if (armPosition<=500) {
+                Arm.setTargetPosition(armPosition+5);
+                Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                Arm.setPower(0.5);
+            }
+        }
+        if (gamepad1.b){
+            if (armPosition>=50)
+            Arm.setTargetPosition(armPosition-5);
+            Arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            Arm.setPower(0.2);
+        }
             double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = -gamepad1.right_stick_x;
